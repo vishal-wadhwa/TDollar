@@ -30,44 +30,14 @@ def _event_handler(event_type, slack_event):
     obj
         Response object with 200 - ok or 500 - No Event Handler error
 
-    """
+    """    
     team_id = slack_event["team_id"]
-    # ================ Team Join Events =============== #
-    # When the user first joins a team, the type of event will be team_join
-    if event_type == "team_join":
-        user_id = slack_event["event"]["user"]["id"]
-        # Send the onboarding message
-        pyBot.onboarding_message(team_id, user_id)
-        return make_response("Welcome Message Sent", 200,)
-
-    # ============== Share Message Events ============= #
-    # If the user has shared the onboarding message, the event type will be
-    # message. We'll also need to check that this is a message that has been
-    # shared by looking into the attachments for "is_shared".
-    elif event_type == "message" and slack_event["event"].get("attachments"):
-        user_id = slack_event["event"].get("user")
-        if slack_event["event"]["attachments"][0].get("is_share"):
-            # Update the onboarding message and check off "Share this Message"
-            pyBot.update_share(team_id, user_id)
-            return make_response("Welcome message updates with shared message",
-                                 200,)
-
-    # ============= Reaction Added Events ============= #
-    # If the user has added an emoji reaction to the onboarding message
-    elif event_type == "reaction_added":
-        user_id = slack_event["event"]["user"]
-        # Update the onboarding message
-        pyBot.update_emoji(team_id, user_id)
-        return make_response("Welcome message updates with reactji", 200,)
-
-    # =============== Pin Added Events ================ #
-    # If the user has added an emoji reaction to the onboarding message
-    elif event_type == "pin_added":
-        user_id = slack_event["event"]["user"]
-        # Update the onboarding message
-        pyBot.update_pin(team_id, user_id)
-        return make_response("Welcome message updates with pin", 200,)
-
+    event_type = slack_event['event']
+    print slack_event
+    if event_type == 'app_mention':
+        
+        return make_response('App mention', 200,)
+    
     # ============= Event Type Not Found! ============= #
     # If the event_type does not have a handler
     message = "You have not added an event handler for the %s" % event_type
@@ -82,9 +52,10 @@ def pre_install():
     # them more easily while we're developing our app.
     client_id = pyBot.oauth["client_id"]
     scope = pyBot.oauth["scope"]
+    redirect_uri = pyBot.oauth["redirect_uri"]
     # Our template is using the Jinja templating language to dynamically pass
     # our client id and scope
-    return render_template("install.html", client_id=client_id, scope=scope)
+    return render_template("install.html", client_id=client_id, scope=scope, redirect_uri=redirect_uri)
 
 
 @app.route("/thanks", methods=["GET", "POST"])
@@ -110,7 +81,6 @@ def hears():
     handler helper function to route events to our Bot.
     """
     slack_event = json.loads(request.data)
-
     # ============= Slack URL Verification ============ #
     # In order to verify the url of our endpoint, Slack will send a challenge
     # token in a request and check for this token in the response our endpoint
@@ -144,4 +114,4 @@ def hears():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=3000)
