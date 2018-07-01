@@ -40,6 +40,8 @@ while(True):
 		current_time = datetime.datetime.now()
 		if not len(openSlots[type]) == 0:
 			finishSlot=openSlots[type][0]
+			finishSlot.status='closed'
+			db.session.commit()
 			openSlots[type].pop(0)
 			fStart=finishSlot.start_time
 			fEnd = fStart +duration
