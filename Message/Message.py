@@ -4,7 +4,7 @@ class Message(object):
     EPHEMERAL = 'ephemeral'
     def __init__(self, builder):
         self.__text = builder.txt
-        self.__attachments = builder.attachments
+        self.__attachments = builder.attachments[:]
         self.__response_type = builder.res_type  
         builder.clear()
      

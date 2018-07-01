@@ -6,8 +6,8 @@ class ActionMenu(Action):
     def __init__(self, builder):
         super(ActionMenu, self).__init__(builder)
         self.__type = builder._type
-        self.__options = builder._options
-        self.__option_groups = builder._option_groups
+        self.__options = builder._options[:]
+        self.__option_groups = builder._option_groups[:]
         self.__select_idx = builder._select_idx
         builder.clear()
 
@@ -26,7 +26,6 @@ class ActionMenu(Action):
                 d['selected_options'] = dd
             else:
                 d['options'] = dd
-        
         if len(self.__option_groups) > 0:
             dd = []
             for optg in self.__option_groups:
@@ -82,4 +81,5 @@ class ActionMenu(Action):
             return self 
 
         def create(self):
+            print 'll', self._option_groups
             return ActionMenu(self)

@@ -5,7 +5,7 @@ class Action(object):
         self.__text = builder._text
         self.__value = builder._value
         self.__confirm = builder._confirm
-        builder.clear()
+        # builder.clear()
 
 
     def to_dict(self):

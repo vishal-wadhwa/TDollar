@@ -4,8 +4,8 @@ class OptionGroup(object):
 
     def __init__(self, builder):
         self.__text = builder.txt
-        self.__options = builder.options
-        builder.clear()
+        self.__options = builder.options[:]
+        builder.clear()        
 
 
     def to_dict(self):

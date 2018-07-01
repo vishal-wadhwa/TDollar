@@ -11,8 +11,8 @@ class Attachment(object):
         self.__fallback = builder._fallback
         self.__color = builder._color
         self.__callback_id = builder._callback_id
-        self.__actions = builder._actions
-        self.__fields = builder._fields
+        self.__actions = builder._actions[:]
+        self.__fields = builder._fields[:]
         builder.clear()
 
 
