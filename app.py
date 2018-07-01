@@ -158,21 +158,23 @@ def attachment_handler(payload):
     name = payload['user']['name']
     callback_id = payload['callback_id']
     userObj = users.query.filter_by(name=user).first()
-    print 'here', userObj.stage
     if callback_id == 'dd_bidtype_select':
 
         userObj.stage = 2
         userObj.fullname = name
-        print users.query.all()
         selected_type = payload['actions'][0]['selected_options'][0]['value']
 
         open_slots = slots.query.filter_by(slot_type = selected_type, status = 'open').all()
-        print 'select type', selected_type, open_slots
         att = buildDropDown.slotDD(open_slots)
         response = pyBot.post_secret_message(user=user,channel=payload["channel"]["id"],text="Here are the available slots:", att=att)
     elif callback_id == 'dd_bidslot_select':
 
         selected_slot_id = payload['actions'][0]['selected_options'][0]['value']
+        rebid = len(bidInfo.query.filter_by(name=user, slot_id = selected_slot_id).all()) > 0
+        if rebid:
+            userObj.stage = 0
+            db.session.commit()
+            return make_response('You\'ve already placed bid for this slot.')
         userObj.slot_id = selected_slot_id
         userObj.stage = 3
         response = pyBot.post_secret_message(user=user, channel=payload['channel']['id'],text="Enter bid amount",att="[]")
