@@ -43,6 +43,7 @@ class bidInfo(db.Model):
     __tablename__ = 'infoBid'
     id = db.Column(db.Integer(), primary_key = True)
     name = db.Column(db.Integer(), nullable = False)
+    amt = db.Column(db.Integer())
     slot_id = db.Column(db.Integer(), nullable = False)
 
 class slots(db.Model):
@@ -52,7 +53,7 @@ class slots(db.Model):
     slot_type = db.Column(db.String(255))
     duration = db.Column(db.Integer(), default = 20)
     highestBid = db.Column(db.Integer(), default =0)
-    highestBidder = db.Column(db.String(255))
+    highestBidder = db.Column(db.String(255), default ='')
     status = db.Column(db.String(255), default = 'open')
 #######
 
