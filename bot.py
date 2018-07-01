@@ -75,10 +75,10 @@ class Bot(object):
 		print auth_response
 		self.client = SlackClient(authed_teams[team_id]["bot_token"])
 
-	def post_message(self,channel,text, att):
+	def post_message(self,channel,text, att='[]'):
 		print(self.client.api_call("chat.postMessage",channel=channel,text=text,attachments=att))
 
-	def post_secret_message(self,user,channel,text, att):
+	def post_secret_message(self,user,channel,text, att='[]'):
 		print(self.client.api_call("chat.postEphemeral",user=user,channel=channel,text=text,attachments=att))
 
 	def open_dm(self, user_id):
