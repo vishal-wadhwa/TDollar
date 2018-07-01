@@ -2,7 +2,11 @@ from Message.ActionMenu import ActionMenu
 from Message.Attachment import Attachment
 from Message.Option import Option
 from Message.OptionGroup import OptionGroup
+
 import json
+
+from datetime import timedelta
+import time
 
 ab = Attachment.Builder()
 ogb = OptionGroup.Builder()
@@ -35,3 +39,27 @@ msg_at = json.dumps([ab.callback_id('dd_bidtype_select')
                                             .create())
                             .create().to_dict()])
 
+FORMAT = '%I:%M %p'
+TIME_DUR = 20
+def slotOpt(slot):
+    st = slot.start_time
+    ed = slot.start_time + timedelta(minutes = TIME_DUR)
+    op_str = st.strftime(FORMAT) + ' - ' + ed.strftime(FORMAT)
+    return ob.text(op_str).value(slot.slot_id).create()
+
+def slotDD(slots):
+    print slots
+    newl = map(slotOpt, slots)
+    print 'opts', newl
+    for op in newl:
+        menub.addOption(op)
+
+    return json.dumps([
+        ab.callback_id('dd_bidslot_select')
+            .fallback('Unsupported action')
+            .text('Choose a slot')
+            .color(Attachment.COLOR_GOOD)
+            .addAction(menub.name('Slots:')
+                            .text('Select...')
+                            .create())
+            .create().to_dict()])

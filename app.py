@@ -22,8 +22,9 @@ db = SQLAlchemy(app)
 holding_upper_limit = 100 
 ##### Models 
 class users(db.Model):
-    __tablename__ = 'user'
+    __tablename__ = 'user_'
     name = db.Column(db.String(255), primary_key = True)
+    fullname = db.Column(db.String(255))
     holding = db.Column(db.Integer(), default = holding_upper_limit, nullable = False)
     stage = db.Column(db.Integer(), default = 0 )
     slot_id = db.Column(db.Integer())
@@ -35,24 +36,25 @@ class users(db.Model):
     # 4 Amount Given 
     # -> leave 
     def __str__(self):
-        return str(self.name)
+        return str(self.name + ': ' + self.fullname + '; ')
     def __repr__(self):
-        return str(self.name)
+        return str(self.name + ': ' + self.fullname + '; ')
 
 class bidInfo(db.Model):
-    __tablename__ = 'infoBid'
+    __tablename__ = 'infoBid_'
     id = db.Column(db.Integer(), primary_key = True)
     name = db.Column(db.Integer(), nullable = False)
     slot_id = db.Column(db.Integer(), nullable = False)
+    amt = db.Column(db.Integer())
 
 class slots(db.Model):
-    __tablename__ = 'slotsInfoo'
+    __tablename__ = 'slotsInfooo'
     slot_id = db.Column(db.Integer(), primary_key = True)
     start_time = db.Column(db.DateTime)
     slot_type = db.Column(db.String(255))
     duration = db.Column(db.Integer(), default = 20)
     highestBid = db.Column(db.Integer(), default =0)
-    highestBidder = db.Column(db.String(255))
+    highestBidder = db.Column(db.String(255), default='')
     status = db.Column(db.String(255), default = 'open')
 #######
 
@@ -107,9 +109,9 @@ def hears():
         data = json.loads(request.data)
     
     slack_event = data
-    print 'data is ', slack_event
-    print 'payload' in slack_event
-    print 'event' in slack_event
+    # print 'data is ', slack_event
+    # print 'payload' in slack_event
+    # print 'event' in slack_event
     # slack_event = json.loads(request.data)
     # ============= Slack URL Verification ============ #
     # In order to verify the url of our endpoint, Slack will send a challenge
@@ -156,13 +158,25 @@ def attachment_handler(payload):
     name = payload['user']['name']
     callback_id = payload['callback_id']
     userObj = users.query.filter_by(name=user).first()
-    print 'here', userObj
+    print 'here', userObj.stage
     if callback_id == 'dd_bidtype_select':
+
         userObj.stage = 2
+        userObj.fullname = name
+        print users.query.all()
         selected_type = payload['actions'][0]['selected_options'][0]['value']
-        open_slots = slots.query.filter_by(slot_type = type, status = 'open')
-        print selected_type
-        pass
+
+        open_slots = slots.query.filter_by(slot_type = selected_type, status = 'open').all()
+        print 'select type', selected_type, open_slots
+        att = buildDropDown.slotDD(open_slots)
+        response = pyBot.post_secret_message(user=user,channel=payload["channel"]["id"],text="Here are the available slots:", att=att)
+    elif callback_id == 'dd_bidslot_select':
+
+        selected_slot_id = payload['actions'][0]['selected_options'][0]['value']
+        userObj.slot_id = selected_slot_id
+        userObj.stage = 3
+        response = pyBot.post_secret_message(user=user, channel=payload['channel']['id'],text="Enter bid amount",att="[]")
+    db.session.commit()
     return make_response("Done",200,)
 
 def _event_handler(event_type, slack_event):
@@ -184,7 +198,7 @@ def _event_handler(event_type, slack_event):
 
     """    
     try: 
-        msg = event['message']['text']
+        msg = slack_event['message']['text']
         if msg == 'Done':
             return make_response("Done",200)
     except:
@@ -195,6 +209,7 @@ def _event_handler(event_type, slack_event):
     # if event_type == 'app_mention':
         
     #     return make_response('App mention', 200,)
+    print 'et: ', event
     if (event_type == "message" or event_type == "app_mention"):
         if "subtype" in event and event["subtype"] == "message_changed":
             msg_text = event["message"]["text"]
@@ -207,16 +222,16 @@ def _event_handler(event_type, slack_event):
         if len(existing_users) == 0 :
             newUser = users(name = user)
             db.session.add(newUser)
-            db.session.commit()
             userObj = newUser
         else:
             userObj = existing_users[0]
 
-
-
+        db.session.commit()
+        print 'isdigit', msg_text.isdigit(), userObj.stage
         if msg_text == 'bid' and userObj.stage == 0:
             att=buildDropDown.msg_at
             userObj.stage = 1
+            db.session.commit()
             # print att
             response = pyBot.post_secret_message(user=user,channel=event["channel"],text="Choose category", att=att)
             # print response
@@ -224,7 +239,7 @@ def _event_handler(event_type, slack_event):
             return make_response("Done",200,)
 
             # Send dropdown for types
-        elif userObj.stage == 4 and msg_text.isdigit():
+        elif userObj.stage == 3 and msg_text.isdigit():
             amount = int(msg_text)
             if userObj.holding < amount:
                 userObj.stage = 0
@@ -233,14 +248,16 @@ def _event_handler(event_type, slack_event):
                 # TODO : check if bid can be placed now 
                 userObj.holding -= amount
                 userObj.stage = 0
-                newBid = bidInfo(name=user,slot_id=userObj.slot_id)
+                newBid = bidInfo(name=user,slot_id=userObj.slot_id,amt=amount)
                 db.session.add(newBid)
                 text="Bid placed. Holding remaining - {}".format(userObj.holding)
+            db.session.commit()
             pyBot.post_message(channel=event["channel"],text=text)
         else:
             userObj.stage = 0
             text="Sorry! Unknown message"
             pyBot.post_message(channel=event["channel"],text=text)
+            db.session.commit()
 
 
         if "<@UBH8PG5U6>" in msg_text:
