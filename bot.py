@@ -35,7 +35,7 @@ class Bot(object):
 		# an oauth token. We can connect to the client without authenticating
 		# by passing an empty string as a token and then reinstantiating the
 		# client with a valid OAuth token once we have one.
-		self.client = SlackClient("")
+		self.client = SlackClient("xoxb-390491814181-391295549958-ptf7PJpNb91nqrqSkWhdIieF")
 		# We'll use this dictionary to store the state of each message object.
 		# In a production envrionment you'll likely want to store this more
 		# persistantly in  a database.
@@ -75,11 +75,11 @@ class Bot(object):
 		print auth_response
 		self.client = SlackClient(authed_teams[team_id]["bot_token"])
 
-	def post_message(self,channel,text):
-		print(self.client.api_call("chat.postMessage",channel=channel,text=text))
+	def post_message(self,channel,text, att):
+		print(self.client.api_call("chat.postMessage",channel=channel,text=text,attachments=att))
 
-	def post_secret_message(self,user,channel,text):
-		print(self.client.api_call("chat.postEphemeral",user=user,channel=channel,text=text))
+	def post_secret_message(self,user,channel,text, att):
+		print(self.client.api_call("chat.postEphemeral",user=user,channel=channel,text=text,attachments=att))
 
 	def open_dm(self, user_id):
 		"""
