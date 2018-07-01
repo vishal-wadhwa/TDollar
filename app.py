@@ -9,7 +9,6 @@ import json
 import bot
 from flask import Flask, request, make_response, render_template
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 import buildDropDown
 
@@ -269,6 +268,7 @@ def _event_handler(event_type, slack_event):
             pyBot.post_secret_message(user=user,channel=channel,text="Hurray")
             #print(slack_event["event"]["text"])
             return make_response("Done",200,)
+
     
     # ============= Event Type Not Found! ============= #
     # If the event_type does not have a handler
