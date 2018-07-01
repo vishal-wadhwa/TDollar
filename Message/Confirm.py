@@ -7,8 +7,6 @@ class Confirm(object):
         self.__text = builder._text
         self.__ok_text = builder._ok_text
         self.__dismiss_text = builder._dismiss_text
-        builder.clear()
-
 
     def to_dict(self):
         d = {}
@@ -58,5 +56,7 @@ class Confirm(object):
         def create(self):
             if not self._text:
                 raise ValueError('Text property not set.')
-            return Confirm(self)
+            ob = Confirm(self)
+            self.clear()
+            return ob
             

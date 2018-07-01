@@ -13,8 +13,6 @@ class Attachment(object):
         self.__callback_id = builder._callback_id
         self.__actions = builder._actions
         self.__fields = builder._fields
-        builder.clear()
-
 
     def to_dict(self):
         d = {}
@@ -103,5 +101,6 @@ class Attachment(object):
                 raise ValueError('fallback content must be set.')
             if not self._callback_id:
                 raise ValueError('callback id must be set.')
-            l = len(self._actions)
-            return Attachment(self)
+            ob = Attachment(self)
+            self.clear()
+            return ob

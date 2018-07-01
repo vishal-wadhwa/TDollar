@@ -5,7 +5,6 @@ class Field(object):
         self.__title = builder.titl
         self.__value = builder.val
         self.__short = builder.shorty
-        builder.clear()
 
     def to_dict(self):
         d = {}
@@ -46,4 +45,6 @@ class Field(object):
                 raise ValueError('Field value must be set.')
             if not self.titl:
                 raise ValueError('Field title must be set.')
-            return Field(self)
+            ob = Field(self)
+            self.clear()
+            return ob

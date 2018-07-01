@@ -5,9 +5,7 @@ class OptionGroup(object):
     def __init__(self, builder):
         self.__text = builder.txt
         self.__options = builder.options
-        builder.clear()
-
-
+        
     def to_dict(self):
         d = {}
         if self.__text:
@@ -44,4 +42,6 @@ class OptionGroup(object):
                 raise ValueError('OptionGroup text must be set.')
             if len(self.options) == 0:
                 raise ValueError('OptionGroup must have at least one option')
-            return OptionGroup(self)
+            ob = OptionGroup(self)
+            self.clear()
+            return ob

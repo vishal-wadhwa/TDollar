@@ -5,8 +5,6 @@ class Action(object):
         self.__text = builder._text
         self.__value = builder._value
         self.__confirm = builder._confirm
-        builder.clear()
-
 
     def to_dict(self):
         d = {}
@@ -60,8 +58,9 @@ class Action(object):
                 raise ValueError('Must specify action name.')
             if not self._text:
                 raise ValueError('Must specify action text.')
-
-            return Action(self)
+            ob = Action(self)
+            self.clear()
+            return ob
             
     
 

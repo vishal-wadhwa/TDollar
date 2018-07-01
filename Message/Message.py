@@ -6,8 +6,6 @@ class Message(object):
         self.__text = builder.txt
         self.__attachments = builder.attachments
         self.__response_type = builder.res_type  
-        builder.clear()
-     
     
     def to_dict(self):
         d = {}
@@ -51,5 +49,7 @@ class Message(object):
             return self
 
         def create(self):
-            return Message(self)
+            ob = Message(self)
+            self.clear()
+            return ob
     
