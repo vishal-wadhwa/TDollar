@@ -44,6 +44,7 @@ class bidInfo(db.Model):
     __tablename__ = 'infoBid_'
     id = db.Column(db.Integer(), primary_key = True)
     name = db.Column(db.Integer(), nullable = False)
+    amt = db.Column(db.Integer())
     slot_id = db.Column(db.Integer(), nullable = False)
     amt = db.Column(db.Integer())
 

@@ -10,8 +10,6 @@ class ActionButton(Action):
         super(ActionButton, self).__init__(builder)
         self.__type = builder._type
         self.__style = builder._style
-        builder.clear()
-
 
     def to_dict(self):
         d = super(ActionButton, self).to_dict()
@@ -57,4 +55,6 @@ class ActionButton(Action):
             return self
 
         def create(self):
-            return ActionButton(self)
+            ob = ActionButton(self)
+            self.clear()
+            return ob

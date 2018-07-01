@@ -6,8 +6,6 @@ class Option(object):
         self.__text = builder.txt
         self.__value = builder.val
         self.__descr = builder.descr
-        builder.clear()
-
 
     def to_dict(self):
         d = {}
@@ -50,4 +48,7 @@ class Option(object):
                 raise ValueError('Option text must be set.')
             if not self.val:
                 raise ValueError('Option value must be set.')
-            return Option(self)
+
+            ob = Option(self)
+            self.clear()
+            return ob

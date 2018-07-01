@@ -9,8 +9,6 @@ class ActionMenu(Action):
         self.__options = builder._options[:]
         self.__option_groups = builder._option_groups[:]
         self.__select_idx = builder._select_idx
-        builder.clear()
-
 
     def to_dict(self):
         d = super(ActionMenu, self).to_dict()
@@ -81,5 +79,6 @@ class ActionMenu(Action):
             return self 
 
         def create(self):
-            print 'll', self._option_groups
-            return ActionMenu(self)
+            ob = ActionMenu(self)
+            self.clear()
+            return ob
