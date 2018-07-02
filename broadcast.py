@@ -2,6 +2,7 @@ import requests
 import json
 import datetime
 import time
+import buildDropDown
 
 from app import *
 openSlots = {
@@ -23,7 +24,8 @@ is %s
 '''
 
 def modify(datetimeObj):
-	return '%s:%s'%(datetimeObj.hour, datetimeObj.minute)
+	return datetimeObj.strftime('%I:%M %p')
+	# return '%s:%s'%(datetimeObj.hour, datetimeObj.minute)
 
 headers = {
 	'content-type': 'application/json'
@@ -66,7 +68,8 @@ while(True):
 	
 
 				data ={
-				'text': finishText%(type, modify(fStart), modify(fEnd), user_name)
+				'text': '',
+				'attachments': buildDropDown.slotDispStart('Winner for the following {} slot is: *{}*. :confetti_ball: '.format(type, user_name), modify(fStart), modify(fEnd))
 				}
 				re = requests.post(url, data = json.dumps(data), headers = headers)
 				
@@ -82,7 +85,8 @@ while(True):
 		slot_start = current_time + twoHrs
 		slot_finish = slot_start + duration
 		data ={
-			'text': text%(type, modify(slot_start), modify(slot_finish))
+			'text': '',
+			'attachments': buildDropDown.slotDispStart('Bidding for the following {} slot begins: '.format(type), modify(slot_start), modify(slot_finish))
 		}
 		newSlot = slots(start_time = slot_start, slot_type='table_tennis')
 		openSlots[type].append(newSlot)

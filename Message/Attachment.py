@@ -38,6 +38,7 @@ class Attachment(object):
             for fld in self.__fields:
                 dd.append(fld.to_dict())
             d['fields'] = dd
+        d["mrkdwn_in"] = ["text"]
         return d
 
     def to_json(self):

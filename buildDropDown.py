@@ -2,6 +2,7 @@ from Message.ActionMenu import ActionMenu
 from Message.Attachment import Attachment
 from Message.Option import Option
 from Message.OptionGroup import OptionGroup
+from Message.Field import Field
 
 import json
 
@@ -12,6 +13,7 @@ ab = Attachment.Builder()
 ogb = OptionGroup.Builder()
 ob = Option.Builder()
 menub = ActionMenu.Builder()
+fb = Field.Builder()
 
 msg_at = json.dumps([ab.callback_id('dd_bidtype_select')
                             .fallback('No support for selection')
@@ -40,7 +42,7 @@ msg_at = json.dumps([ab.callback_id('dd_bidtype_select')
                             .create().to_dict()])
 
 FORMAT = '%I:%M %p'
-TIME_DUR = 20
+TIME_DUR = 5
 def slotOpt(slot):
     st = slot.start_time
     ed = slot.start_time + timedelta(minutes = TIME_DUR)
@@ -63,3 +65,15 @@ def slotDD(slots):
                             .text('Select...')
                             .create())
             .create().to_dict()])
+
+
+def slotDispStart(text, st_str, ed_str):
+    return json.dumps([
+        ab.callback_id('dd_slot_win')
+            .fallback('Unsupported')
+            .text(text)
+            .color(Attachment.COLOR_GOOD)
+            .addField(fb.title('Start Time').value(st_str).short(True).create())
+            .addField(fb.title('End Time').value(ed_str).short(True).create())
+            .create().to_dict()
+    ])
